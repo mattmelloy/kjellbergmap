@@ -91,8 +91,9 @@ async function init() {
   try {
     let xml = null;
     const tryPaths = [
-      'Kjellberg-orthophoto_tiles/tilemapresource.xml',
-      'Kjellberg-dsm_tiles/tilemapresource.xml'
+      'https://filedn.com/lnwtRrhS2tTy2K4EooXWFnR/tiles/kjellberg0825/ortho/tilemapresource.xml',
+      'https://filedn.com/lnwtRrhS2tTy2K4EooXWFnR/tiles/kjellberg0825/ortholowres/tilemapresource.xml',
+      'https://filedn.com/lnwtRrhS2tTy2K4EooXWFnR/tiles/kjellberg0825/dsm/tilemapresource.xml'
     ];
     const parser = new DOMParser();
     for (const p of tryPaths) {
@@ -145,11 +146,21 @@ async function init() {
 
   // Example: create multiple local tile layers (you can add more with createLocalTileLayer)
   // Note: many of the redlynch tiles are stored with TMS y-origin; use tms: true where appropriate
-  const orthomosaic = createLocalTileLayer('https://filedn.com/lnwtRrhS2tTy2K4EooXWFnR/tiles/kjellberg0825/ortho/{z}/{x}/{y}.png', {
+  const orthomosaic = createLocalTileLayer('https://filedn.com/lnwtRrhS2tTy2K4EooXWFnR/tiles/kjellberg0825/ortho2/{z}/{x}/{y}.png', {
     tms: true,
     minZoom,
     maxZoom,
     attribution: 'Orthophoto (Kjellberg)'
+  });
+
+  // Low-resolution orthophoto (rendered underneath the high-res orthophoto)
+  const ortholowres = createLocalTileLayer('https://filedn.com/lnwtRrhS2tTy2K4EooXWFnR/tiles/kjellberg0825/ortholowres/{z}/{x}/{y}.png', {
+    // keep same TMS setting as the high-res ortho unless your tiles use XYZ origin
+    tms: true,
+    minZoom,
+    maxZoom,
+    attribution: 'Ortho Low-res (Kjellberg)',
+    opacity: 1
   });
 
   // Digital Surface Model layer (added from redlynchdsm directory)
@@ -172,7 +183,8 @@ async function init() {
     minZoom: minZoom,
     maxZoom: maxZoom,
     // Start with the Google Imagery basemap and enable the orthophoto overlay by default
-    layers: [baseLayers.GoogleImagery, orthomosaic]
+    // add the low-res ortho first so it renders underneath the high-res orthophoto
+    layers: [baseLayers.GoogleImagery, ortholowres, orthomosaic]
   });
 
   // Fit and constrain to bounds
@@ -180,7 +192,8 @@ async function init() {
 
   // Layer control
   const overlays = {
-    'Imagary/Orthophoto': orthomosaic,
+    'Ortho Low-res': ortholowres,
+    'Imagery/Orthophoto': orthomosaic,
     'Digital Surface Map': dsm
     // add other overlays here as you create them
     // 'Other tiles': otherLayer
