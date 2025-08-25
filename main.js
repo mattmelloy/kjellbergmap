@@ -140,7 +140,7 @@ async function init() {
 
   // Example: create multiple local tile layers (you can add more with createLocalTileLayer)
   // Note: many of the redlynch tiles are stored with TMS y-origin; use tms: true where appropriate
-  const orthomosaic = createLocalTileLayer('Kjellberg-orthophoto_tiles/{z}/{x}/{y}.png', {
+  const orthomosaic = createLocalTileLayer('https://filedn.com/lnwtRrhS2tTy2K4EooXWFnR/tiles/kjellberg0825/ortho/{z}/{x}/{y}.png', {
     tms: true,
     minZoom,
     maxZoom,
@@ -148,7 +148,7 @@ async function init() {
   });
 
   // Digital Surface Model layer (added from redlynchdsm directory)
-  const dsm = createLocalTileLayer('Kjellberg-dsm_tiles/{z}/{x}/{y}.png', {
+  const dsm = createLocalTileLayer('https://filedn.com/lnwtRrhS2tTy2K4EooXWFnR/tiles/kjellberg0825/dsm/{z}/{x}/{y}.png', {
     // DSM tiles appear to follow the same TMS layout; set tms accordingly if they are bottom-left origin
     tms: true,
     minZoom,
@@ -175,8 +175,8 @@ async function init() {
 
   // Layer control
   const overlays = {
-    'Orthophoto (Kjellberg)': orthomosaic,
-    'DSM (Kjellberg)': dsm
+    'Imagary/Orthophoto': orthomosaic,
+    'Digital Surface Map': dsm
     // add other overlays here as you create them
     // 'Other tiles': otherLayer
   };
