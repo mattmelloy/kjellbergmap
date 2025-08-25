@@ -36,7 +36,12 @@ function createBaseLayers() {
     }
   );
 
-  return { OpenWebMap: openWebMap, Imagery: imagery };
+  const googleImagery = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+    maxZoom: 23,
+    attribution: 'Google Maps Imagery'
+  });
+
+  return { OpenWebMap: openWebMap, Imagery: imagery, GoogleImagery: googleImagery };
 }
 
 // Small UI control to adjust overlay opacity
@@ -160,18 +165,18 @@ async function init() {
   // If you later add other local datasets, create them here:
   // const otherLayer = createLocalTileLayer('othertiles/{z}/{x}/{y}.png', { tms: false, attribution: 'Other' });
 
-  // Initialize the map (start with OpenWebMap)
+  // Initialize the map (start with Google Imagery as the default basemap)
   const map = L.map('map', {
     center: bounds.getCenter(),
     zoom: 18, // Changed default zoom level
     minZoom: minZoom,
     maxZoom: maxZoom,
-    // Start with the Imagery basemap and enable the orthophoto overlay by default
-    layers: [baseLayers.Imagery, orthomosaic]
+    // Start with the Google Imagery basemap and enable the orthophoto overlay by default
+    layers: [baseLayers.GoogleImagery, orthomosaic]
   });
 
   // Fit and constrain to bounds
-  map.setMaxBounds(bounds.pad(0.25)); // Keep max bounds constraint
+  // map.setMaxBounds(bounds.pad(0.25)); // Keep max bounds constraint - Commented out to fix zoom issue
 
   // Layer control
   const overlays = {
@@ -181,7 +186,13 @@ async function init() {
     // 'Other tiles': otherLayer
   };
 
-  L.control.layers(baseLayers, overlays, { collapsed: false }).addTo(map);
+  const baseLayerControl = {
+    'OpenWebMap': baseLayers.OpenWebMap,
+    'Esri Imagery': baseLayers.Imagery,
+    'Google Imagery': baseLayers.GoogleImagery
+  };
+
+  L.control.layers(baseLayerControl, overlays, { collapsed: false }).addTo(map);
 
   // Add scale
   L.control.scale().addTo(map);
